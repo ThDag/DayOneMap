@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply m-0 bg-gray-950 text-gray-100 antialiased;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  #root {
+    @apply h-screen w-screen overflow-hidden;
+  }
+}
+
+.leaflet-container {
+  @apply bg-gray-800;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply rounded-lg border border-gray-700 bg-gray-900 text-gray-100 shadow-xl;
+}
+
+.leaflet-popup-tip {
+  @apply border-gray-700 bg-gray-900;
+}
+
+.leaflet-popup-close-button {
+  @apply text-gray-400 hover:text-gray-100;
+}
+
+.marker-cluster-small {
+  @apply rounded-full bg-blue-500/30;
+}
+.marker-cluster-small div {
+  @apply flex items-center justify-center rounded-full bg-blue-500 text-sm font-semibold text-white;
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+}
+.marker-cluster-medium {
+  @apply rounded-full bg-amber-500/30;
+}
+.marker-cluster-medium div {
+  @apply flex items-center justify-center rounded-full bg-amber-500 text-sm font-semibold text-white;
+  width: 36px;
+  height: 36px;
+  margin: 6px;
+}
+.marker-cluster-large {
+  @apply rounded-full bg-rose-500/30;
+}
+.marker-cluster-large div {
+  @apply flex items-center justify-center rounded-full bg-rose-500 text-sm font-semibold text-white;
+  width: 42px;
+  height: 42px;
+  margin: 7px;
+}
