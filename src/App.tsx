@@ -57,7 +57,7 @@ const handleSelect = useCallback((entry: LocationEntry | null) => {
         <div className="flex items-center gap-2">
           <MapPin size={20} className="text-blue-400" />
           <h1 className="text-base font-semibold text-white">
-            DayMap
+            DayOneMap
           </h1>
           <span className="ml-2 rounded-full bg-gray-800 px-2.5 py-0.5 text-xs text-gray-400">
             {data.length} locations

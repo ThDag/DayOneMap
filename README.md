@@ -1,4 +1,4 @@
-# DayMap
+# DayOneMap
 
 Visualise your location history from [Day One](https://dayone.app) on an interactive map.
 
