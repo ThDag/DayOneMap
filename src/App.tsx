@@ -96,7 +96,6 @@ onChange={(e) => {
         <div className="relative flex-1">
 <MapView
             data={data}
-            selected={selected}
             onSelect={handleSelect}
             onClusterSelect={handleClusterSelect}
             filterCountry={filterCountry}

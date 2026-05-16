@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect, useRef } from "react";
+import { useMemo, useCallback, useEffect, useRef, memo } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -39,13 +39,12 @@ function FlyTo({ lat, lng }: { lat: number; lng: number }) {
 
 interface MapViewProps {
   data: LocationEntry[];
-  selected: LocationEntry | null;
   onSelect: (entry: LocationEntry | null) => void;
   onClusterSelect: (entries: LocationEntry[]) => void;
   filterCountry: string;
 }
 
-export default function MapView({
+export default memo(function MapView({
   data,
   onSelect,
   onClusterSelect,
@@ -135,4 +134,4 @@ export default function MapView({
       </MarkerClusterGroup>
     </MapContainer>
   );
-}
+});
