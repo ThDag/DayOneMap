@@ -92,3 +92,10 @@ This app is fully self-contained. All data is loaded from a local `public/places
 ## License
 
 MIT
+
+## Credit
+
+I didn't really write the code it was all vibe coded.
+
+Taha Dağıstanlı
+OpenCode (DeepSeek V4 Flash)
