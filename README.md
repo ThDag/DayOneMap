@@ -99,5 +99,6 @@ MIT
 
 This project is fully vibecoded.
 
-Taha Dağıstanlı
+Taha Dağıstanlı <br>
+
 OpenCode (DeepSeek V4 Flash)
