@@ -94,3 +94,10 @@ This app is fully self-contained. All data is loaded from a local `public/places
 ## License
 
 MIT
+
+## Credits
+
+This project is fully vibecoded.
+
+Taha Dağıstanlı
+OpenCode (DeepSeek V4 Flash)
