@@ -2,7 +2,7 @@
 
 Visualise your location history from [Day One](https://dayone.app) on an interactive map.
 
-Day One records a location entry whenever you create a journal entry. This tool reads the exported location data and plots every place you've checked in — clustered, filterable, and browsable.
+Day One records all the places you have been in a day and how long you stayed there (if turned on). This tool reads the exported location data and plots every place you've been on a map — clustered, filterable, and browsable.
 
 ## Getting Started
 
