@@ -9,6 +9,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<LocationEntry | null>(null);
+  const [clusterEntries, setClusterEntries] = useState<LocationEntry[] | null>(
+    null,
+  );
   const [filterCountry, setFilterCountry] = useState("");
 
   useEffect(() => {
@@ -23,8 +26,19 @@ export default function App() {
     return Array.from(set).sort();
   }, [data]);
 
-  const handleSelect = useCallback((entry: LocationEntry | null) => {
+const handleSelect = useCallback((entry: LocationEntry | null) => {
     setSelected(entry);
+    setClusterEntries(null);
+  }, []);
+
+  const handleClusterSelect = useCallback((entries: LocationEntry[]) => {
+    setClusterEntries(entries);
+    setSelected(null);
+  }, []);
+
+  const handleCloseSidebar = useCallback(() => {
+    setSelected(null);
+    setClusterEntries(null);
   }, []);
 
   if (loading) {
@@ -61,9 +75,10 @@ export default function App() {
           <Filter size={14} className="text-gray-500" />
           <select
             value={filterCountry}
-            onChange={(e) => {
+onChange={(e) => {
               setFilterCountry(e.target.value);
               setSelected(null);
+              setClusterEntries(null);
             }}
             className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 outline-none transition-colors focus:border-blue-500"
           >
@@ -79,15 +94,21 @@ export default function App() {
 
       <div className="flex flex-1 overflow-hidden">
         <div className="relative flex-1">
-          <MapView
+<MapView
             data={data}
             selected={selected}
             onSelect={handleSelect}
+            onClusterSelect={handleClusterSelect}
             filterCountry={filterCountry}
           />
         </div>
-        {selected && (
-          <Sidebar entry={selected} onClose={() => setSelected(null)} />
+        {(selected || clusterEntries) && (
+          <Sidebar
+            entry={selected}
+            entries={clusterEntries}
+            onClose={handleCloseSidebar}
+            onSelectEntry={handleSelect}
+          />
         )}
       </div>
     </div>

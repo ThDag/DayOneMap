@@ -41,12 +41,14 @@ interface MapViewProps {
   data: LocationEntry[];
   selected: LocationEntry | null;
   onSelect: (entry: LocationEntry | null) => void;
+  onClusterSelect: (entries: LocationEntry[]) => void;
   filterCountry: string;
 }
 
 export default function MapView({
   data,
   onSelect,
+  onClusterSelect,
   filterCountry,
 }: MapViewProps) {
   const filtered = useMemo(
@@ -73,6 +75,18 @@ export default function MapView({
     [onSelect],
   );
 
+  const handleClusterClick = useCallback(
+    (e: L.LeafletMouseEvent) => {
+      const cluster = e.layer as any;
+      const bounds = cluster.getBounds() as L.LatLngBounds;
+      const entriesInCluster = filtered.filter((entry) =>
+        bounds.contains([entry.location.latitude, entry.location.longitude]),
+      );
+      onClusterSelect(entriesInCluster);
+    },
+    [filtered, onClusterSelect],
+  );
+
   return (
     <MapContainer
       center={[41.0, 28.9]}
@@ -85,7 +99,11 @@ export default function MapView({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <MarkerClusterGroup chunkedLoading>
+      <MarkerClusterGroup
+        chunkedLoading
+        zoomToBoundsOnClick={false}
+        onClick={handleClusterClick}
+      >
         {filtered.map((entry) => (
           <Marker
             key={entry.uuid}

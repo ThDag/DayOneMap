@@ -1,10 +1,25 @@
-import { X, MapPin, Calendar, Clock, Crosshair, Globe } from "lucide-react";
+import { X, MapPin, Calendar, Clock, Crosshair, Globe, ChevronRight } from "lucide-react";
 import type { LocationEntry } from "../data";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
+  });
+}
+
+function formatDateShort(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function formatTime(iso: string) {
+  return new Date(iso).toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -20,11 +35,78 @@ function formatDuration(ms: number) {
 }
 
 interface SidebarProps {
-  entry: LocationEntry | null;
+  entry?: LocationEntry | null;
+  entries?: LocationEntry[] | null;
   onClose: () => void;
+  onSelectEntry?: (entry: LocationEntry) => void;
 }
 
-export default function Sidebar({ entry, onClose }: SidebarProps) {
+function ClusterList({
+  entries,
+  onSelectEntry,
+}: {
+  entries: LocationEntry[];
+  onSelectEntry: (entry: LocationEntry) => void;
+}) {
+  if (entries.length === 0) return null;
+
+  return (
+    <div className="flex-1 overflow-y-auto">
+      {entries.map((entry) => {
+        const dur = durationMs(entry.arrivalDate, entry.departureDate);
+        return (
+          <button
+            key={entry.uuid}
+            onClick={() => onSelectEntry(entry)}
+            className="flex w-full items-center gap-3 border-b border-gray-800 px-5 py-3 text-left transition-colors hover:bg-gray-800/50"
+          >
+            <div className="flex-1 min-w-0">
+              <p className="truncate text-sm font-medium text-white">
+                {entry.location.placeName}
+              </p>
+              <p className="mt-0.5 text-xs text-gray-400">
+                {formatDateShort(entry.arrivalDate)}{" "}
+                <span className="text-gray-600">|</span>{" "}
+                {formatTime(entry.arrivalDate)}&ndash;{formatTime(entry.departureDate)}{" "}
+                <span className="text-gray-600">|</span>{" "}
+                <span className="text-emerald-400">{formatDuration(dur)}</span>
+              </p>
+            </div>
+            <ChevronRight size={14} className="shrink-0 text-gray-600" />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function Sidebar({
+  entry,
+  entries,
+  onClose,
+  onSelectEntry,
+}: SidebarProps) {
+  const isCluster = entries && entries.length > 0;
+
+  if (isCluster) {
+    return (
+      <div className="flex h-full w-96 flex-col border-l border-gray-800 bg-gray-900 shadow-2xl transition-all duration-300">
+        <div className="flex items-center justify-between border-b border-gray-800 px-5 py-4">
+          <h2 className="text-lg font-semibold text-white">
+            Cluster ({entries.length})
+          </h2>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-200"
+          >
+            <X size={18} />
+          </button>
+        </div>
+        <ClusterList entries={entries} onSelectEntry={onSelectEntry!} />
+      </div>
+    );
+  }
+
   if (!entry) return null;
 
   const dur = durationMs(entry.arrivalDate, entry.departureDate);
