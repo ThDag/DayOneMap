@@ -19,7 +19,7 @@ npm install
 
 ### Add your Day One data
 
-Export your Day One data (Journal → Export → JSON), then copy the location entries into `public/places.json`. See [`public/places.json.example`](public/places.json.example) for the expected schema:
+Export your Day One data (Today → Places → View All → ... Locations (i) → Export Data), then copy the location entries into `public/places.json`. See [`public/places.json.example`](public/places.json.example) for the expected schema:
 
 ```json
 [
