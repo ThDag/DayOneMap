@@ -1,0 +1,23 @@
+[
+  {
+    "uuid": "example-1",
+    "location": {
+      "region": {
+        "center": { "longitude": -73.9857, "latitude": 40.7484 },
+        "identifier": "<+40.7484,-73.9857> radius 50",
+        "radius": 50
+      },
+      "localityName": "New York",
+      "country": "United States",
+      "timeZoneName": "America/New_York",
+      "administrativeArea": "New York",
+      "longitude": -73.9857,
+      "placeName": "Empire State Building",
+      "latitude": 40.7484
+    },
+    "arrivalDate": "2024-06-15T09:00:00Z",
+    "departureDate": "2024-06-15T11:30:00Z",
+    "horizontalAccuracy": 20,
+    "timestamp": "2024-06-15T11:30:00Z"
+  }
+]

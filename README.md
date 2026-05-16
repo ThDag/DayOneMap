@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# Places History Map
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A self-hosted web app that visualises your location history on an interactive map. Import your Apple/Google location data and explore it with clustering, filtering, and detailed side-panel views.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Prerequisites
 
-## React Compiler
+- Node.js 20+
+- npm
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Install
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Add your location data
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Place a `places.json` file in the `public/` directory. See [`public/places.json.example`](public/places.json.example) for the expected schema:
 
-export default defineConfig([
-  globalIgnores(['dist']),
+```json
+[
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
+    "uuid": "your-unique-id",
+    "location": {
+      "region": {
+        "center": { "longitude": ..., "latitude": ... },
+        "identifier": "...",
+        "radius": ...
       },
-      // other options...
+      "localityName": "City",
+      "country": "Country",
+      "timeZoneName": "Timezone",
+      "administrativeArea": "State/Region",
+      "longitude": ...,
+      "placeName": "Address or POI",
+      "latitude": ...
     },
-  },
-])
+    "arrivalDate": "2024-01-01T12:00:00Z",
+    "departureDate": "2024-01-01T14:00:00Z",
+    "horizontalAccuracy": 20,
+    "timestamp": "2024-01-01T14:00:00Z"
+  }
+]
 ```
+
+> ⚠️ **`public/places.json` is gitignored** — it won't accidentally be committed to your repository.
+
+### Run (development)
+
+```bash
+npm run dev
+```
+
+### Build (production)
+
+```bash
+npm run build
+```
+
+Preview the build:
+
+```bash
+npm run preview
+```
+
+## Mock Data
+
+If no `places.json` is found, the app falls back to built-in mock data showing sample locations (New York, London, Paris, Tokyo, Sydney). A **Mock Data** badge appears in the header so you know real data isn't loaded.
+
+## Privacy
+
+This app is fully self-contained. All data is loaded from a local `public/places.json` file and never leaves your machine. There are no analytics, no telemetry, and no external API calls — map tiles are loaded from OpenStreetMap.
+
+## Features
+
+- **Clustered markers** — locations are automatically clustered at low zoom levels; click a cluster to see all entries in the sidebar
+- **Country filter** — filter locations by country
+- **Sidebar detail view** — click any marker to see full details (date, time, duration, coordinates, accuracy, timezone)
+- **Dark theme** — built-in dark UI
+
+## Tech Stack
+
+- [React](https://react.dev) 19
+- [TypeScript](https://www.typescriptlang.org)
+- [Vite](https://vitejs.dev)
+- [Leaflet](https://leafletjs.com) / [react-leaflet](https://react-leaflet.js.org)
+- [Tailwind CSS](https://tailwindcss.com) v4
+- [lucide-react](https://lucide.dev) icons
+
+## License
+
+MIT

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { MapPin, Filter, Loader2 } from "lucide-react";
+import { MapPin, Filter, Loader2, Database } from "lucide-react";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import { loadLocations, type LocationEntry } from "./data";
@@ -7,7 +7,7 @@ import { loadLocations, type LocationEntry } from "./data";
 export default function App() {
   const [data, setData] = useState<LocationEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [usingMock, setUsingMock] = useState(false);
   const [selected, setSelected] = useState<LocationEntry | null>(null);
   const [clusterEntries, setClusterEntries] = useState<LocationEntry[] | null>(
     null,
@@ -16,8 +16,10 @@ export default function App() {
 
   useEffect(() => {
     loadLocations()
-      .then(setData)
-      .catch((e) => setError(e.message))
+      .then((result) => {
+        setData(result.data);
+        setUsingMock(result.usingMock);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -49,15 +51,6 @@ const handleSelect = useCallback((entry: LocationEntry | null) => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center gap-3 bg-gray-950">
-        <p className="text-lg text-red-400">Failed to load data</p>
-        <p className="text-sm text-gray-500">{error}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-screen w-screen flex-col bg-gray-950">
       <header className="flex items-center justify-between border-b border-gray-800 bg-gray-900/80 px-5 py-3 backdrop-blur-sm">
@@ -69,6 +62,12 @@ const handleSelect = useCallback((entry: LocationEntry | null) => {
           <span className="ml-2 rounded-full bg-gray-800 px-2.5 py-0.5 text-xs text-gray-400">
             {data.length} locations
           </span>
+          {usingMock && (
+            <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs text-amber-400">
+              <Database size={10} />
+              Mock Data
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
