@@ -1,6 +1,8 @@
-# Places History Map
+# DayMap
 
-A self-hosted web app that visualises your location history on an interactive map. Import your Apple/Google location data and explore it with clustering, filtering, and detailed side-panel views.
+Visualise your location history from [Day One](https://dayone.app) on an interactive map.
+
+Day One records a location entry whenever you create a journal entry. This tool reads the exported location data and plots every place you've checked in — clustered, filterable, and browsable.
 
 ## Getting Started
 
@@ -15,14 +17,14 @@ A self-hosted web app that visualises your location history on an interactive ma
 npm install
 ```
 
-### Add your location data
+### Add your Day One data
 
-Place a `places.json` file in the `public/` directory. See [`public/places.json.example`](public/places.json.example) for the expected schema:
+Export your Day One data (Journal → Export → JSON), then copy the location entries into `public/places.json`. See [`public/places.json.example`](public/places.json.example) for the expected schema:
 
 ```json
 [
   {
-    "uuid": "your-unique-id",
+    "uuid": "your-entry-uuid",
     "location": {
       "region": {
         "center": { "longitude": ..., "latitude": ... },
@@ -45,7 +47,7 @@ Place a `places.json` file in the `public/` directory. See [`public/places.json.
 ]
 ```
 
-> ⚠️ **`public/places.json` is gitignored** — it won't accidentally be committed to your repository.
+> ⚠️ **`public/places.json` is gitignored** — your location data won't accidentally be committed.
 
 ### Run (development)
 
@@ -92,10 +94,3 @@ This app is fully self-contained. All data is loaded from a local `public/places
 ## License
 
 MIT
-
-## Credit
-
-I didn't really write the code it was all vibe coded.
-
-Taha Dağıstanlı
-OpenCode (DeepSeek V4 Flash)
