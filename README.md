@@ -25,7 +25,9 @@ npm install
 
 ### Add your Day One data
 
-Export your Day One data (Today → Places → View All → ... Locations (i) → Export Data), then copy the location entries into `public/places.json`. See [`public/places.json.example`](public/places.json.example) for the expected schema:
+Export your location history from the Day One app (Places → View All → Locations ( i ) → Export Data) and save the JSON file as `public/places.json`. See [`docs/how-to-export-dayone-data.md`](docs/how-to-export-dayone-data.md) for a step-by-step guide with screenshots.
+
+The file should match this schema (see [`public/places.json.example`](public/places.json.example)):
 
 ```json
 [
