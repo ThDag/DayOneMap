@@ -4,6 +4,12 @@ Visualise your location history from [Day One](https://dayone.app) on an interac
 
 Day One records all the places you have been in a day and how long you stayed there (if turned on). This tool reads the exported location data and plots every place you've been on a map — clustered, filterable, and browsable.
 
+<p align="center">
+  <img src="screenshots/screenshot%201%20main%20map.png" alt="Main map view with clustered markers" width="30%" />
+  <img src="screenshots/screenshot%202%20cluster%20panel.png" alt="Cluster panel showing grouped locations" width="30%" />
+  <img src="screenshots/screenshot%203%20location%20details%20panel.png" alt="Location details panel" width="30%" />
+</p>
+
 ## Getting Started
 
 ### Prerequisites
