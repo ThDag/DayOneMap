@@ -1,13 +1,12 @@
 # DayOneMap
 
-Visualise your location history from [Day One](https://dayone.app) on an interactive map.
+Visualise your location history from [Day One](https://dayoneapp.com) on an interactive map.
 
-Day One records all the places you have been in a day and how long you stayed there (if turned on). This tool reads the exported location data and plots every place you've been on a map — clustered, filterable, and browsable.
+Day One records all the places you have been in a day and how long you stayed there (a feature available on iPhones if turned on). Since Day One doesn't include a built-in map overview to see all of this history at once, and no other tool exists to do so, this application fills that gap. It reads your exported location data and plots every place you've been on an interactive map — clustered, filterable, and browsable.
 
 <p align="center">
-  <img src="screenshots/screenshot%201%20main%20map.png" alt="Main map view with clustered markers" width="30%" />
-  <img src="screenshots/screenshot%202%20cluster%20panel.png" alt="Cluster panel showing grouped locations" width="30%" />
-  <img src="screenshots/screenshot%203%20location%20details%20panel.png" alt="Location details panel" width="30%" />
+  <img src="screenshots/screenshot%202%20cluster%20panel.png" alt="Cluster panel showing grouped locations" width="49%" />
+  <img src="screenshots/screenshot%203%20location%20details%20panel.png" alt="Location details panel" width="49%" />
 </p>
 
 ## Getting Started
