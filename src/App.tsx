@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import MapView from "./components/MapView";
+import MapView, { type MapMode } from "./components/MapView";
 import DetailsPanel from "./components/DetailsPanel";
 import { loadLocations, type LocationEntry } from "./data";
+
+const MAP_MODES: { id: MapMode; label: string }[] = [
+  { id: "clusters", label: "Clusters" },
+  { id: "dots", label: "Dots" },
+];
 
 function byArrival(a: LocationEntry, b: LocationEntry) {
   return a.arrivalDate.localeCompare(b.arrivalDate);
@@ -18,6 +23,7 @@ export default function App() {
   );
   const [flyTo, setFlyTo] = useState<LocationEntry | null>(null);
   const [filterCountry, setFilterCountry] = useState("");
+  const [mode, setMode] = useState<MapMode>("clusters");
 
   useEffect(() => {
     loadLocations()
@@ -92,6 +98,7 @@ export default function App() {
   return (
     <main className="relative isolate h-dvh">
       <MapView
+        mode={mode}
         entries={filtered}
         selected={selected}
         flyTo={flyTo}
@@ -109,6 +116,30 @@ export default function App() {
               : data.length.toLocaleString()}{" "}
             {data.length === 1 ? "stop" : "stops"}
           </p>
+        </div>
+        <div
+          role="group"
+          aria-label="Map view"
+          className="grid grid-cols-2 gap-1 border-t border-line p-1"
+        >
+          {MAP_MODES.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={mode === id}
+              onClick={() => {
+                setMode(id);
+                handleClose();
+              }}
+              className={`h-8 rounded-md transition-colors ${
+                mode === id
+                  ? "bg-raised font-medium text-ink"
+                  : "text-dim hover:bg-raised hover:text-ink"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
         {data.length > 0 ? (
           <div className="relative border-t border-line">

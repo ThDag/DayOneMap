@@ -20,7 +20,8 @@ A client-only React 19 + TypeScript SPA with no backend and no router. The app h
 
 - **Data (`src/data.ts`):** defines `LocationEntry`, which mirrors the Day One export schema, and holds the mock dataset, which makes up most of the file. `loadLocations()` fetches `/places.json` once at startup.
 - **State (`src/App.tsx`):** owns all shared state with plain `useState`: the loaded data, the selected entry, the selected cluster's entries, the country filter and the derived filtered list. There is no state library. Rendering waits for loading to finish, so `MapView` always mounts with data.
-- **Views (`src/components/`):** `MapView` renders clustered stops and `DetailsPanel` shows a cluster list or one stop's details. `selected` and `clusterEntries` can both be set: a stop opened from a cluster list keeps the list so Back can return to it.
+- **Map views:** `App` holds the current `MapMode` and lists the options in `MAP_MODES`, and `MapView` renders the matching layer. To add a view, extend `MapMode` and `MAP_MODES` and add its layer in `MapView`. The Dots layer draws non-interactive canvas circle markers, so it can't open details.
+- **Views (`src/components/`):** `MapView` renders the map and its stops, and `DetailsPanel` shows a cluster list or one stop's details. `selected` and `clusterEntries` can both be set: a stop opened from a cluster list keeps the list so Back can return to it.
 
 Each record is one visit (a stop with arrival and departure times), so a place visited repeatedly appears as several records. Records contain no route data or stable place ID.
 

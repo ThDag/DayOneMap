@@ -149,13 +149,44 @@ const Stops = memo(function Stops({
   );
 });
 
+/** One canvas dot per stop, with no grouping. Dots are not clickable, which keeps them cheap to draw. */
+const Dots = memo(function Dots({ entries }: { entries: LocationEntry[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const renderer = L.canvas({ padding: 0.5 });
+    const layer = L.layerGroup(
+      entries.map((entry) =>
+        L.circleMarker(latLng(entry), {
+          renderer,
+          radius: 3,
+          stroke: false,
+          fillColor: "#fff",
+          fillOpacity: 0.85,
+          interactive: false,
+        }),
+      ),
+    ).addTo(map);
+    return () => {
+      layer.remove();
+      renderer.remove();
+    };
+  }, [map, entries]);
+
+  return null;
+});
+
+export type MapMode = "clusters" | "dots";
+
 interface MapViewProps extends StopsProps {
+  mode: MapMode;
   selected: LocationEntry | null;
   flyTo: LocationEntry | null;
   onBackgroundClick: () => void;
 }
 
 export default function MapView({
+  mode,
   entries,
   selected,
   flyTo,
@@ -179,11 +210,15 @@ export default function MapView({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Stops
-        entries={entries}
-        onSelect={onSelect}
-        onClusterSelect={onClusterSelect}
-      />
+      {mode === "clusters" ? (
+        <Stops
+          entries={entries}
+          onSelect={onSelect}
+          onClusterSelect={onClusterSelect}
+        />
+      ) : (
+        <Dots entries={entries} />
+      )}
       {selected && (
         <Marker
           position={latLng(selected)}
