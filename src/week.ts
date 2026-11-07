@@ -18,6 +18,9 @@ function formatterFor(timeZone: string) {
   let formatter = formatters.get(timeZone);
   if (!formatter) {
     const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
       weekday: "short",
       hour: "numeric",
       minute: "numeric",
@@ -38,12 +41,16 @@ function localSlot(time: number, formatter: Intl.DateTimeFormat) {
   let day = 0;
   let hour = 0;
   let minute = 0;
+  let date = "";
   for (const { type, value } of formatter.formatToParts(time)) {
     if (type === "weekday") day = WEEK_DAYS.indexOf(value);
     else if (type === "hour") hour = Number(value);
     else if (type === "minute") minute = Number(value);
+    else if (type === "year" || type === "month" || type === "day") {
+      date += `${value}-`;
+    }
   }
-  return { day, hour, minute };
+  return { day, hour, minute, date };
 }
 
 /** Every stop within `radius` metres of the given stop, which counts as one place. */
@@ -62,6 +69,7 @@ export function stopsNear(
 /** Hours spent per [day][hour] of the week, using each stop's own local time. */
 export function weekHours(entries: LocationEntry[]) {
   const hours = WEEK_DAYS.map(() => new Array<number>(24).fill(0));
+  const dates = new Set<string>();
   let total = 0;
 
   for (const entry of entries) {
@@ -70,15 +78,16 @@ export function weekHours(entries: LocationEntry[]) {
     let time = new Date(entry.arrivalDate).getTime();
     // A comparison with an invalid date is false, so bad records add nothing.
     while (time < end) {
-      const { day, hour, minute } = localSlot(time, formatter);
+      const { day, hour, minute, date } = localSlot(time, formatter);
       const next = Math.min(end, time + (60 - minute) * MINUTE - (time % MINUTE));
+      dates.add(date);
       hours[day][hour] += (next - time) / HOUR;
       total += (next - time) / HOUR;
       time = next;
     }
   }
 
-  return { hours, total, max: Math.max(...hours.flat()) };
+  return { hours, total, max: Math.max(...hours.flat()), days: dates.size };
 }
 
 export function formatHours(amount: number) {

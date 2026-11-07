@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { BASEMAPS, type BasemapId } from "./basemaps";
 import MapView, { type MapMode } from "./components/MapView";
 import DetailsPanel from "./components/DetailsPanel";
 import HeatControls from "./components/HeatControls";
@@ -29,6 +30,7 @@ export default function App() {
   const [flyTo, setFlyTo] = useState<LocationEntry | null>(null);
   const [filterCountry, setFilterCountry] = useState("");
   const [mode, setMode] = useState<MapMode>("clusters");
+  const [basemapId, setBasemapId] = useState<BasemapId>("standard");
   const [heatSettings, setHeatSettings] = useState(DEFAULT_HEAT_SETTINGS);
   const [placeRadius, setPlaceRadius] = useState(DEFAULT_PLACE_RADIUS);
 
@@ -106,6 +108,7 @@ export default function App() {
     <main className="relative isolate h-dvh">
       <MapView
         mode={mode}
+        basemapId={basemapId}
         heatSettings={heatSettings}
         entries={filtered}
         selected={selected}
@@ -135,6 +138,14 @@ export default function App() {
               setMode(next);
               handleClose();
             }}
+          />
+        </div>
+        <div className="border-t border-line p-1">
+          <SegmentedControl
+            label="Base map"
+            options={BASEMAPS}
+            value={basemapId}
+            onChange={setBasemapId}
           />
         </div>
         {data.length > 0 ? (

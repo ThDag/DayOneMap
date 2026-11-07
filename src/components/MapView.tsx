@@ -10,6 +10,7 @@ import {
 } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
+import { BASEMAPS, type BasemapId } from "../basemaps";
 import type { LocationEntry } from "../data";
 import type { HeatSettings } from "../heatmap";
 import HeatLayer from "./HeatLayer";
@@ -183,6 +184,7 @@ export type MapMode = "clusters" | "dots" | "heatmap";
 
 interface MapViewProps extends StopsProps {
   mode: MapMode;
+  basemapId: BasemapId;
   heatSettings: HeatSettings;
   selected: LocationEntry | null;
   placeRadius: number;
@@ -192,6 +194,7 @@ interface MapViewProps extends StopsProps {
 
 export default function MapView({
   mode,
+  basemapId,
   heatSettings,
   entries,
   selected,
@@ -201,6 +204,8 @@ export default function MapView({
   onClusterSelect,
   onBackgroundClick,
 }: MapViewProps) {
+  const basemap = BASEMAPS.find(({ id }) => id === basemapId)!;
+
   return (
     <MapContainer
       center={[20, 0]}
@@ -213,9 +218,13 @@ export default function MapView({
       <FitToStops entries={entries} />
       <FocusSelection selected={selected} flyTo={flyTo} />
       <MapClick onClick={onBackgroundClick} />
+      {/* The key remounts the layer, because Leaflet can't change a layer's class later. */}
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        key={basemap.id}
+        attribution={basemap.attribution}
+        url={basemap.url}
+        className={basemap.className}
+        maxNativeZoom={basemap.maxNativeZoom}
       />
       {mode === "clusters" && (
         <Stops

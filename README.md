@@ -80,13 +80,14 @@ If no `places.json` is found, the app falls back to 40 built-in sample stops in 
 
 ## Privacy
 
-This app is fully self-contained. All data is loaded from a local `public/places.json` file and never leaves your machine. There are no analytics, no telemetry, and no external API calls — map tiles are loaded from OpenStreetMap.
+This app is fully self-contained. All data is loaded from a local `public/places.json` file and never leaves your machine. There are no analytics, no telemetry, and no external API calls except for map tiles. Tiles load from OpenStreetMap by default, and from Esri only while you have the Clean or Satellite base map selected. Your location file is never sent, but as with any online map, the provider can see which map areas you view.
 
 ## Features
 
-- **Clustered map** — stops cluster at low zoom levels; click a cluster to list its stops
+- **Clustered map** — stops cluster at low zoom levels; click a cluster to see a summary of it and list its stops
 - **Dots view** — switch from clusters to one dot for every stop, with no grouping at any zoom level
 - **Heatmap view** — heat by time spent or number of visits, with controls for size, softness, the amount that reaches full colour, and low-end boost
+- **Base maps** — switch between Standard, Clean and Satellite
 - **Country filter** — filter stops by country
 - **Weekly hour table** — for any stop opened from the clustered map, a 7-day by 24-hour table of the time spent at that place, with stops within an adjustable radius (40 m by default) counted as one place
 - **Stop details** — date, time, duration, coordinates, accuracy and timezone, with times shown in the stop's own timezone

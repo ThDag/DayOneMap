@@ -5,9 +5,9 @@ import {
   formatDate,
   formatDateShort,
   formatDuration,
-  formatMonth,
   formatTime,
 } from "../format";
+import ClusterSummary from "./ClusterSummary";
 import WeekTable from "./WeekTable";
 
 interface DetailsPanelProps {
@@ -103,7 +103,7 @@ function StopList({
   onSelectEntry: (entry: LocationEntry) => void;
 }) {
   return (
-    <ul className="overflow-y-auto">
+    <ul>
       {entries.map((entry) => {
         const zone = entry.location.timeZoneName;
         return (
@@ -128,14 +128,6 @@ function StopList({
       })}
     </ul>
   );
-}
-
-function dateSpan(entries: LocationEntry[]) {
-  const first = entries[0];
-  const last = entries[entries.length - 1];
-  const from = formatMonth(first.arrivalDate, first.location.timeZoneName);
-  const to = formatMonth(last.departureDate, last.location.timeZoneName);
-  return from === to ? from : `${from} – ${to}`;
 }
 
 export default function DetailsPanel({
@@ -163,16 +155,9 @@ export default function DetailsPanel({
           </IconButton>
         )}
         <h2 className="min-w-0 flex-1 py-1 font-semibold break-words">
-          {entry ? (
-            entry.location.placeName
-          ) : (
-            <>
-              {entries!.length} stops
-              <span className="block font-normal text-dim">
-                {dateSpan(entries!)}
-              </span>
-            </>
-          )}
+          {entry
+            ? entry.location.placeName
+            : `${entries!.length.toLocaleString()} stops`}
         </h2>
         <IconButton label="Close" onClick={onClose}>
           <X size={16} />
@@ -186,7 +171,10 @@ export default function DetailsPanel({
           onPlaceRadiusChange={onPlaceRadiusChange}
         />
       ) : (
-        <StopList entries={entries!} onSelectEntry={onSelectEntry} />
+        <div className="overflow-y-auto">
+          <ClusterSummary entries={entries!} radius={placeRadius} />
+          <StopList entries={entries!} onSelectEntry={onSelectEntry} />
+        </div>
       )}
     </section>
   );

@@ -23,6 +23,7 @@ A client-only React 19 + TypeScript SPA with no backend and no router. The app h
 - **Map views:** `App` holds the current `MapMode` and lists the options in `MAP_MODES`, and `MapView` renders the matching layer. To add a view, extend `MapMode` and `MAP_MODES` and add its layer in `MapView`. The Dots layer draws non-interactive canvas circle markers, so it can't open details.
 - **Heatmap (`src/heatmap.ts`, `HeatLayer`, `HeatControls`):** the layer adds each stop's hours or visits into a float grid at screen resolution, then maps each amount through a log scale (`heatFraction`) to a colour, so "Full colour at" means real hours or visits at any zoom and small amounts stay distinct from each other. It redraws fully on every map move and setting change, and its cost grows with stops × size².
 - **Weekly table (`src/week.ts`, `WeekTable`):** records have no place ID, so a "place" is every stop within the adjustable radius of the selected stop, drawn as a circle on the map. Picking a different stop in the same area can give a slightly different group. Stays are split at hour boundaries in each stop's own timezone. The table only appears in stop details, which the Dots and Heatmap views can't open.
+- **Cluster summary (`src/summary.ts`, `ClusterSummary`):** total time merges overlapping stops, and "Places" and "Most time at" group stops by distance because one location appears under several names. Groups are centred on the longest stays, so "Most time at" can differ from the weekly table's total for a nearby stop.
 - **Views (`src/components/`):** `MapView` renders the map and its stops, and `DetailsPanel` shows a cluster list or one stop's details. `selected` and `clusterEntries` can both be set: a stop opened from a cluster list keeps the list so Back can return to it.
 
 Each record is one visit (a stop with arrival and departure times), so a place visited repeatedly appears as several records. Records contain no route data or stable place ID.
@@ -40,14 +41,14 @@ Each record is one visit (a stop with arrival and departure times), so a place v
 - Tailwind CSS v4 is configured through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/index.css`, where the colour tokens live in `@theme`. There is no `tailwind.config` file. The UI is dark-only.
 - Leaflet and MarkerCluster CSS are bundled from npm through imports in `src/main.tsx`.
 - Stop and cluster icons are styled by their class names in `src/index.css`.
-- Map tiles come from OpenStreetMap and are darkened by a CSS filter on `.leaflet-tile-pane`, not by a different tile provider.
+- Base maps are listed in `src/basemaps.ts`. Standard is the default and uses OpenStreetMap tiles darkened by a CSS filter on `.basemap-darkened`; Clean and Satellite use Esri tiles, which need no API key, and only contact Esri while selected. CARTO's tiles now return HTTP 200 stamped "API KEY REQUIRED", so check a new provider by looking at it, not by its status code.
 - `PRODUCT.md` records who the product is for and its constraints.
 
 ## Privacy
 
 `public/places.json` is the user's personal location history and is gitignored. Do not commit it or copy its contents into source, docs, or fixtures. Vite copies `public/` into `dist/` at build time, so a build made with real data contains that history.
 
-The README promises no analytics, telemetry, or external API calls beyond map tiles, so keep new features local and add no third-party requests, including fonts and CDNs.
+The README promises no analytics, telemetry, or external API calls beyond map tiles from the listed base map providers, so keep new features local and add no other third-party requests, including fonts and CDNs.
 
 ## Planning docs
 

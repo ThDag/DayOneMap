@@ -27,8 +27,8 @@ The user exports JSON from Day One (Places → View All → Locations → Export
 - Current functions: clustered markers, a country filter, a cluster list, and visit details (dates, times, duration, coordinates, accuracy, timezone). Times are shown in each visit's own timezone.
 - Each record is one stop with arrival and departure times. There is no route, transport mode, or place category.
 - Barebone tool for now: no welcome page, wizard, or onboarding flow.
-- No new third-party requests, including fonts and CDNs. Map tiles stay on OpenStreetMap unless the user decides otherwise.
-- Planned but unbuilt: weekly hour table, time heatmap, timeline scrubber, drill-down stats (`docs/features-to-build.md`).
+- No new third-party requests, including fonts and CDNs. Map tiles default to OpenStreetMap, and Esri is contacted only while the user has the Clean or Satellite base map selected.
+- Planned but unbuilt: timeline scrubber, drill-down stats (`docs/features-to-build.md`).
 
 ## Brand Commitments
 

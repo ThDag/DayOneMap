@@ -46,8 +46,8 @@
   font: inherit;
 }
 
-/* Darkens the OpenStreetMap tiles without needing another tile provider. */
-.leaflet-tile-pane {
+/* Darkens the OpenStreetMap tiles, which only come in a light style. */
+.basemap-darkened {
   filter: invert(1) hue-rotate(180deg) grayscale(0.6) brightness(0.85) contrast(0.9);
 }
 
