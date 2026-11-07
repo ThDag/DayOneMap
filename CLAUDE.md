@@ -14,38 +14,37 @@ npx tsc -b        # Type-check only
 
 There is no test runner or test suite. Verify changes with the type-check, lint, and by running the app. Without a local `public/places.json`, the app runs on mock data.
 
-`npm run lint` currently reports one existing error: the `as any` cast on the cluster layer in `src/components/MapView.tsx`.
-
 ## Architecture
 
 A client-only React 19 + TypeScript SPA with no backend and no router. The app has three layers:
 
 - **Data (`src/data.ts`):** defines `LocationEntry`, which mirrors the Day One export schema, and holds the mock dataset, which makes up most of the file. `loadLocations()` fetches `/places.json` once at startup.
-- **State (`src/App.tsx`):** owns all shared state with plain `useState`: the loaded data, the selected entry, the selected cluster's entries, and the country filter. There is no state library. Rendering waits for loading to finish, so `MapView` always mounts with data.
-- **Views (`src/components/`):** `MapView` renders clustered markers and `Sidebar` renders either a cluster list or a single entry's details. `App` keeps `selected` and `clusterEntries` mutually exclusive through its handlers, and the sidebar shows whenever either is set.
+- **State (`src/App.tsx`):** owns all shared state with plain `useState`: the loaded data, the selected entry, the selected cluster's entries, the country filter and the derived filtered list. There is no state library. Rendering waits for loading to finish, so `MapView` always mounts with data.
+- **Views (`src/components/`):** `MapView` renders clustered stops and `DetailsPanel` shows a cluster list or one stop's details. `selected` and `clusterEntries` can both be set: a stop opened from a cluster list keeps the list so Back can return to it.
 
 Each record is one visit (a stop with arrival and departure times), so a place visited repeatedly appears as several records. Records contain no route data or stable place ID.
 
 ## Behavior to preserve or watch for
 
 - **Mock fallback:** any failure to load or parse `places.json`, including malformed JSON, silently falls back to mock data and only logs `console.info`. The "Mock Data" header badge is the visible signal, so check it when debugging a data problem. The response is not validated against `LocationEntry`.
-- **Filtering lives in `MapView`:** `App` passes `filterCountry` down and `MapView` derives the filtered list, so any new view that needs filtered data requires moving that logic up into `App`.
+- **Selecting moves the map differently by source:** a stop clicked on the map only pans if needed, while one picked from a cluster list flies there through `flyTo`, because it may be hidden inside the cluster.
+- **Stop markers must stay memoised:** `Stops` in `MapView` is separate so changing the selection does not re-render thousands of markers.
 - **Cluster selection is by bounding box:** `handleClusterClick` selects every filtered entry inside the cluster's bounds rather than the cluster's actual children, so overlapping bounds can pull in entries from neighbouring clusters.
-- **`FlyTo` runs once:** a ref guards it, so changing the country filter does not re-centre the map.
 - **Times are local to the place:** the helpers in `src/format.ts` format each time in the entry's `timeZoneName`, falling back to the browser's timezone if the name is invalid. Pass the entry's zone when formatting any new time display.
 
 ## Styling and map assets
 
-- Tailwind CSS v4 is configured through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/index.css`. There is no `tailwind.config` file. The UI is dark-only.
-- Leaflet and MarkerCluster CSS load from unpkg in `index.html`, not from npm imports. Their versions are pinned there separately from `package.json`.
-- Leaflet popups and cluster icons are themed by overriding their class names in `src/index.css`.
-- Map tiles come from OpenStreetMap.
+- Tailwind CSS v4 is configured through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/index.css`, where the colour tokens live in `@theme`. There is no `tailwind.config` file. The UI is dark-only.
+- Leaflet and MarkerCluster CSS are bundled from npm through imports in `src/main.tsx`.
+- Stop and cluster icons are styled by their class names in `src/index.css`.
+- Map tiles come from OpenStreetMap and are darkened by a CSS filter on `.leaflet-tile-pane`, not by a different tile provider.
+- `PRODUCT.md` records who the product is for and its constraints.
 
 ## Privacy
 
 `public/places.json` is the user's personal location history and is gitignored. Do not commit it or copy its contents into source, docs, or fixtures. Vite copies `public/` into `dist/` at build time, so a build made with real data contains that history.
 
-The README promises no analytics, telemetry, or external API calls beyond map tiles, so keep new features local. It does not mention the unpkg stylesheets in `index.html`.
+The README promises no analytics, telemetry, or external API calls beyond map tiles, so keep new features local and add no third-party requests, including fonts and CDNs.
 
 ## Planning docs
 

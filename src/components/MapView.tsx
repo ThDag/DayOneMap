@@ -1,131 +1,198 @@
-import { useMemo, useCallback, useEffect, useRef, memo } from "react";
+import { memo, useCallback, useEffect, useRef } from "react";
 import {
+  AttributionControl,
   MapContainer,
-  TileLayer,
   Marker,
-  Popup,
+  TileLayer,
   useMap,
+  useMapEvents,
 } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import type { LocationEntry } from "../data";
-import { formatDate } from "../format";
 
-const icon = L.divIcon({
-  className: "custom-marker",
-  html: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#3b82f6" stroke="white" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="white" stroke="none"/></svg>`,
+const FOCUS_ZOOM = 13;
+
+const stopIcon = L.divIcon({
+  className: "stop-icon",
   iconSize: [24, 24],
-  iconAnchor: [12, 24],
-  popupAnchor: [0, -24],
+  iconAnchor: [12, 12],
 });
 
-function FlyTo({ lat, lng }: { lat: number; lng: number }) {
+const selectedIcon = L.divIcon({
+  className: "stop-icon stop-icon-selected",
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});
+
+function clusterIcon(cluster: { getChildCount(): number }) {
+  const count = cluster.getChildCount();
+  return L.divIcon({
+    className: "cluster-icon",
+    html: `<span>${count}</span>`,
+    iconSize: [String(count).length * 8 + 20, 28],
+  });
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function latLng(entry: LocationEntry): [number, number] {
+  return [entry.location.latitude, entry.location.longitude];
+}
+
+/** The part of the map the details panel covers: the right side, or the bottom on phones. */
+function panelInset(map: L.Map): [number, number] {
+  const { x, y } = map.getSize();
+  return x < 640 ? [0, Math.round(y * 0.55)] : [344, 0];
+}
+
+/** Fits the map to the visible stops on load and whenever the filter changes them. */
+function FitToStops({ entries }: { entries: LocationEntry[] }) {
   const map = useMap();
-  const called = useRef(false);
+  const fitted = useRef(false);
+
   useEffect(() => {
-    if (!called.current) {
-      map.flyTo([lat, lng], 5, { duration: 1.5 });
-      called.current = true;
+    if (entries.length === 0) return;
+    const bounds = L.latLngBounds(entries.map(latLng));
+    const options = { padding: [64, 64] as [number, number], maxZoom: 11 };
+    if (fitted.current && !prefersReducedMotion()) {
+      map.flyToBounds(bounds, { ...options, duration: 0.8 });
+    } else {
+      map.fitBounds(bounds, { ...options, animate: false });
     }
-  }, [map, lat, lng]);
+    fitted.current = true;
+  }, [map, entries]);
+
   return null;
 }
 
-interface MapViewProps {
-  data: LocationEntry[];
-  onSelect: (entry: LocationEntry | null) => void;
-  onClusterSelect: (entries: LocationEntry[]) => void;
-  filterCountry: string;
+/** Keeps the selected stop visible beside the details panel. */
+function FocusSelection({
+  selected,
+  flyTo,
+}: {
+  selected: LocationEntry | null;
+  flyTo: LocationEntry | null;
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!selected) return;
+    const target = L.latLng(latLng(selected));
+    const [insetX, insetY] = panelInset(map);
+    if (flyTo?.uuid === selected.uuid) {
+      const zoom = Math.max(map.getZoom(), FOCUS_ZOOM);
+      const center = map.unproject(
+        map.project(target, zoom).add([insetX / 2, insetY / 2]),
+        zoom,
+      );
+      if (prefersReducedMotion()) map.setView(center, zoom, { animate: false });
+      else map.flyTo(center, zoom, { duration: 0.8 });
+    } else {
+      map.panInside(target, {
+        paddingTopLeft: [24, 24],
+        paddingBottomRight: [insetX + 24, insetY + 24],
+        animate: !prefersReducedMotion(),
+      });
+    }
+  }, [map, selected, flyTo]);
+
+  return null;
 }
 
-export default memo(function MapView({
-  data,
+function MapClick({ onClick }: { onClick: () => void }) {
+  useMapEvents({ click: onClick });
+  return null;
+}
+
+interface StopsProps {
+  entries: LocationEntry[];
+  onSelect: (entry: LocationEntry) => void;
+  onClusterSelect: (entries: LocationEntry[]) => void;
+}
+
+/** Memoised so that selecting a stop does not re-render thousands of markers. */
+const Stops = memo(function Stops({
+  entries,
   onSelect,
   onClusterSelect,
-  filterCountry,
-}: MapViewProps) {
-  const filtered = useMemo(
-    () =>
-      filterCountry
-        ? data.filter((d) => d.location.country === filterCountry)
-        : data,
-    [data, filterCountry],
-  );
-
-  const center = useMemo(() => {
-    if (filtered.length === 0) return [41.0, 28.9] as [number, number];
-    const lat =
-      filtered.reduce((s, d) => s + d.location.latitude, 0) / filtered.length;
-    const lng =
-      filtered.reduce((s, d) => s + d.location.longitude, 0) / filtered.length;
-    return [lat, lng] as [number, number];
-  }, [filtered]);
-
-  const handleClick = useCallback(
-    (entry: LocationEntry) => {
-      onSelect(entry);
-    },
-    [onSelect],
-  );
-
+}: StopsProps) {
   const handleClusterClick = useCallback(
     (e: L.LeafletMouseEvent) => {
-      const cluster = e.layer as any;
-      const bounds = cluster.getBounds() as L.LatLngBounds;
-      const entriesInCluster = filtered.filter((entry) =>
-        bounds.contains([entry.location.latitude, entry.location.longitude]),
-      );
-      onClusterSelect(entriesInCluster);
+      const bounds = (e.layer as L.FeatureGroup).getBounds();
+      onClusterSelect(entries.filter((entry) => bounds.contains(latLng(entry))));
     },
-    [filtered, onClusterSelect],
+    [entries, onClusterSelect],
   );
 
   return (
-    <MapContainer
-      center={[41.0, 28.9]}
-      zoom={4}
-      className="h-full w-full"
-      zoomControl={false}
+    <MarkerClusterGroup
+      chunkedLoading
+      zoomToBoundsOnClick={false}
+      showCoverageOnHover={false}
+      maxClusterRadius={56}
+      iconCreateFunction={clusterIcon}
+      onClick={handleClusterClick}
     >
-      <FlyTo lat={center[0]} lng={center[1]} />
+      {entries.map((entry) => (
+        <Marker
+          key={entry.uuid}
+          position={latLng(entry)}
+          icon={stopIcon}
+          keyboard={false}
+          eventHandlers={{ click: () => onSelect(entry) }}
+        />
+      ))}
+    </MarkerClusterGroup>
+  );
+});
+
+interface MapViewProps extends StopsProps {
+  selected: LocationEntry | null;
+  flyTo: LocationEntry | null;
+  onBackgroundClick: () => void;
+}
+
+export default function MapView({
+  entries,
+  selected,
+  flyTo,
+  onSelect,
+  onClusterSelect,
+  onBackgroundClick,
+}: MapViewProps) {
+  return (
+    <MapContainer
+      center={[20, 0]}
+      zoom={3}
+      className="isolate h-full w-full"
+      zoomControl={false}
+      attributionControl={false}
+    >
+      <AttributionControl position="bottomleft" />
+      <FitToStops entries={entries} />
+      <FocusSelection selected={selected} flyTo={flyTo} />
+      <MapClick onClick={onBackgroundClick} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <MarkerClusterGroup
-        chunkedLoading
-        zoomToBoundsOnClick={false}
-        onClick={handleClusterClick}
-      >
-        {filtered.map((entry) => (
-          <Marker
-            key={entry.uuid}
-            position={[entry.location.latitude, entry.location.longitude]}
-            icon={icon}
-            eventHandlers={{
-              click: () => handleClick(entry),
-            }}
-          >
-            <Popup>
-              <div className="min-w-[200px]">
-                <p className="mb-1 text-base font-semibold text-white">
-                  {entry.location.placeName}
-                </p>
-                <p className="text-sm text-gray-400">
-                  {entry.location.localityName},{" "}
-                  {entry.location.administrativeArea}
-                </p>
-                <p className="text-sm text-gray-400">{entry.location.country}</p>
-                <hr className="my-2 border-gray-700" />
-                <p className="text-xs text-gray-500">
-                  {formatDate(entry.arrivalDate, entry.location.timeZoneName)} &ndash;{" "}
-                  {formatDate(entry.departureDate, entry.location.timeZoneName)}
-                </p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MarkerClusterGroup>
+      <Stops
+        entries={entries}
+        onSelect={onSelect}
+        onClusterSelect={onClusterSelect}
+      />
+      {selected && (
+        <Marker
+          position={latLng(selected)}
+          icon={selectedIcon}
+          interactive={false}
+          keyboard={false}
+          zIndexOffset={10000}
+        />
+      )}
     </MapContainer>
   );
-});
+}

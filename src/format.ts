@@ -27,9 +27,23 @@ export function formatDateShort(iso: string, timeZone: string) {
   });
 }
 
+export function formatMonth(iso: string, timeZone: string) {
+  return formatInZone(iso, timeZone, {
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export function formatTime(iso: string, timeZone: string) {
   return formatInZone(iso, timeZone, {
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
   });
+}
+
+export function formatDuration(arrival: string, departure: string) {
+  const ms = new Date(departure).getTime() - new Date(arrival).getTime();
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }

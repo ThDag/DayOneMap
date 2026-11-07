@@ -1,60 +1,99 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ground: #111316;
+  --color-surface: #1a1d21;
+  --color-raised: #262a2f;
+  --color-line: #30353b;
+  --color-dim: #9ca3ad;
+  --color-ink: #eceef1;
+  --color-accent: #5b9dff;
+}
+
 @layer base {
   :root {
     color-scheme: dark;
+    scrollbar-color: var(--color-line) transparent;
+    scrollbar-width: thin;
+  }
+
+  html,
+  body {
+    overflow: hidden;
   }
 
   body {
-    @apply m-0 bg-gray-950 text-gray-100 antialiased;
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    @apply m-0 bg-ground text-ink antialiased;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
   }
 
-  #root {
-    @apply h-screen w-screen overflow-hidden;
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+  }
+
+  option {
+    background: var(--color-surface);
+    color: var(--color-ink);
   }
 }
 
 .leaflet-container {
-  @apply bg-gray-800;
+  @apply bg-ground;
+  font: inherit;
 }
 
-.leaflet-popup-content-wrapper {
-  @apply rounded-lg border border-gray-700 bg-gray-900 text-gray-100 shadow-xl;
+/* Darkens the OpenStreetMap tiles without needing another tile provider. */
+.leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) grayscale(0.6) brightness(0.85) contrast(0.9);
 }
 
-.leaflet-popup-tip {
-  @apply border-gray-700 bg-gray-900;
+.leaflet-control-attribution.leaflet-control {
+  background: var(--color-surface);
+  color: var(--color-dim);
+  padding: 2px 6px;
 }
 
-.leaflet-popup-close-button {
-  @apply text-gray-400 hover:text-gray-100;
+.leaflet-control-attribution a {
+  color: var(--color-ink);
 }
 
-.marker-cluster-small {
-  @apply rounded-full bg-blue-500/30;
+.stop-icon::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--color-ground);
+  border-radius: 50%;
+  background: #fff;
+  transition: inset 150ms;
 }
-.marker-cluster-small div {
-  @apply flex items-center justify-center rounded-full bg-blue-500 text-sm font-semibold text-white;
-  width: 30px;
-  height: 30px;
-  margin: 5px;
+
+.stop-icon:hover::before {
+  inset: 4px;
 }
-.marker-cluster-medium {
-  @apply rounded-full bg-amber-500/30;
+
+.stop-icon-selected::before,
+.stop-icon-selected:hover::before {
+  inset: 3px;
+  background: var(--color-accent);
+  border: 2px solid #fff;
 }
-.marker-cluster-medium div {
-  @apply flex items-center justify-center rounded-full bg-amber-500 text-sm font-semibold text-white;
-  width: 36px;
-  height: 36px;
-  margin: 6px;
+
+.cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-ground);
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-ground);
+  font-weight: 600;
+  transition: background-color 150ms;
 }
-.marker-cluster-large {
-  @apply rounded-full bg-rose-500/30;
-}
-.marker-cluster-large div {
-  @apply flex items-center justify-center rounded-full bg-rose-500 text-sm font-semibold text-white;
-  width: 42px;
-  height: 42px;
-  margin: 7px;
+
+.cluster-icon:hover {
+  background: #fff;
 }

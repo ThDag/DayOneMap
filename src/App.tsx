@@ -1,8 +1,12 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { MapPin, Filter, Loader2, Database } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import MapView from "./components/MapView";
-import Sidebar from "./components/Sidebar";
+import DetailsPanel from "./components/DetailsPanel";
 import { loadLocations, type LocationEntry } from "./data";
+
+function byArrival(a: LocationEntry, b: LocationEntry) {
+  return a.arrivalDate.localeCompare(b.arrivalDate);
+}
 
 export default function App() {
   const [data, setData] = useState<LocationEntry[]>([]);
@@ -12,6 +16,7 @@ export default function App() {
   const [clusterEntries, setClusterEntries] = useState<LocationEntry[] | null>(
     null,
   );
+  const [flyTo, setFlyTo] = useState<LocationEntry | null>(null);
   const [filterCountry, setFilterCountry] = useState("");
 
   useEffect(() => {
@@ -23,92 +28,132 @@ export default function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  const countries = useMemo(() => {
-    const set = new Set(data.map((d) => d.location.country));
-    return Array.from(set).sort();
-  }, [data]);
+  const countries = useMemo(
+    () => Array.from(new Set(data.map((d) => d.location.country))).sort(),
+    [data],
+  );
 
-const handleSelect = useCallback((entry: LocationEntry | null) => {
+  const filtered = useMemo(
+    () =>
+      filterCountry
+        ? data.filter((d) => d.location.country === filterCountry)
+        : data,
+    [data, filterCountry],
+  );
+
+  const handleClose = useCallback(() => {
+    setSelected(null);
+    setClusterEntries(null);
+    setFlyTo(null);
+  }, []);
+
+  const handleBack = useCallback(() => {
+    setSelected(null);
+    setFlyTo(null);
+  }, []);
+
+  // A stop clicked on the map is already in view, and any open cluster list no longer applies.
+  const handleMapSelect = useCallback((entry: LocationEntry) => {
     setSelected(entry);
     setClusterEntries(null);
+    setFlyTo(null);
   }, []);
 
   const handleClusterSelect = useCallback((entries: LocationEntry[]) => {
-    setClusterEntries(entries);
+    setClusterEntries([...entries].sort(byArrival));
     setSelected(null);
+    setFlyTo(null);
   }, []);
 
-  const handleCloseSidebar = useCallback(() => {
-    setSelected(null);
-    setClusterEntries(null);
+  // A stop picked from a cluster list may be hidden inside the cluster, so the map travels to it.
+  const handleListSelect = useCallback((entry: LocationEntry) => {
+    setSelected(entry);
+    setFlyTo(entry);
   }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (selected && clusterEntries) handleBack();
+      else handleClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selected, clusterEntries, handleBack, handleClose]);
 
   if (loading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-gray-950">
-        <Loader2 size={32} className="animate-spin text-blue-400" />
+      <div role="status" className="flex h-dvh items-center justify-center text-dim">
+        Loading stops…
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen w-screen flex-col bg-gray-950">
-      <header className="flex items-center justify-between border-b border-gray-800 bg-gray-900/80 px-5 py-3 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <MapPin size={20} className="text-blue-400" />
-          <h1 className="text-base font-semibold text-white">
-            DayOneMap
-          </h1>
-          <span className="ml-2 rounded-full bg-gray-800 px-2.5 py-0.5 text-xs text-gray-400">
-            {data.length} locations
-          </span>
-          {usingMock && (
-            <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs text-amber-400">
-              <Database size={10} />
-              Mock Data
-            </span>
-          )}
-        </div>
+    <main className="relative isolate h-dvh">
+      <MapView
+        entries={filtered}
+        selected={selected}
+        flyTo={flyTo}
+        onSelect={handleMapSelect}
+        onClusterSelect={handleClusterSelect}
+        onBackgroundClick={handleClose}
+      />
 
-        <div className="flex items-center gap-2">
-          <Filter size={14} className="text-gray-500" />
-          <select
-            value={filterCountry}
-onChange={(e) => {
-              setFilterCountry(e.target.value);
-              setSelected(null);
-              setClusterEntries(null);
-            }}
-            className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 outline-none transition-colors focus:border-blue-500"
-          >
-            <option value="">All Countries</option>
-            {countries.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+      <div className="absolute top-3 left-3 z-[1000] w-64 max-w-[calc(100%-1.5rem)] overflow-hidden rounded-lg border border-line bg-surface shadow-lg shadow-black/40">
+        <div className="flex items-baseline justify-between gap-3 px-3 py-2.5">
+          <h1 className="font-semibold">DayOneMap</h1>
+          <p className="text-dim">
+            {filterCountry
+              ? `${filtered.length.toLocaleString()} of ${data.length.toLocaleString()}`
+              : data.length.toLocaleString()}{" "}
+            {data.length === 1 ? "stop" : "stops"}
+          </p>
         </div>
-      </header>
-
-      <div className="flex flex-1 overflow-hidden">
-        <div className="relative flex-1">
-<MapView
-            data={data}
-            onSelect={handleSelect}
-            onClusterSelect={handleClusterSelect}
-            filterCountry={filterCountry}
-          />
-        </div>
-        {(selected || clusterEntries) && (
-          <Sidebar
-            entry={selected}
-            entries={clusterEntries}
-            onClose={handleCloseSidebar}
-            onSelectEntry={handleSelect}
-          />
+        {data.length > 0 ? (
+          <div className="relative border-t border-line">
+            <select
+              aria-label="Filter by country"
+              value={filterCountry}
+              onChange={(e) => {
+                setFilterCountry(e.target.value);
+                handleClose();
+              }}
+              className="h-10 w-full cursor-pointer appearance-none bg-transparent pr-8 pl-3 transition-colors hover:bg-raised"
+            >
+              <option value="">All countries</option>
+              {countries.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={14}
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-dim"
+            />
+          </div>
+        ) : (
+          <p className="border-t border-line px-3 py-2.5 text-dim">
+            This file has no stops.
+          </p>
+        )}
+        {usingMock && (
+          <p className="border-t border-line px-3 py-2.5 text-dim">
+            Sample data. Add your export as{" "}
+            <code className="font-[inherit] text-ink">public/places.json</code>.
+          </p>
         )}
       </div>
-    </div>
+
+      <DetailsPanel
+        entry={selected}
+        entries={clusterEntries}
+        onClose={handleClose}
+        onBack={handleBack}
+        onSelectEntry={handleListSelect}
+      />
+    </main>
   );
 }

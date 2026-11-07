@@ -76,7 +76,7 @@ npm run preview
 
 ## Mock Data
 
-If no `places.json` is found, the app falls back to built-in mock data showing sample locations (New York, London, Paris, Tokyo, Sydney). A **Mock Data** badge appears in the header so you know real data isn't loaded.
+If no `places.json` is found, the app falls back to 40 built-in sample stops in cities including New York, London, Tokyo, Sydney, Istanbul and across the Balkans. A **Sample data** note appears in the top-left panel so you know real data isn't loaded.
 
 ## Privacy
 
@@ -84,9 +84,9 @@ This app is fully self-contained. All data is loaded from a local `public/places
 
 ## Features
 
-- **Clustered markers** — locations are automatically clustered at low zoom levels; click a cluster to see all entries in the sidebar
-- **Country filter** — filter locations by country
-- **Sidebar detail view** — click any marker to see full details (date, time, duration, coordinates, accuracy, timezone)
+- **Clustered map** — stops cluster at low zoom levels; click a cluster to list its stops
+- **Country filter** — filter stops by country
+- **Stop details** — date, time, duration, coordinates, accuracy and timezone, with times shown in the stop's own timezone
 - **Dark theme** — built-in dark UI
 
 ## Tech Stack
