@@ -8,10 +8,14 @@ import {
   formatMonth,
   formatTime,
 } from "../format";
+import WeekTable from "./WeekTable";
 
 interface DetailsPanelProps {
   entry: LocationEntry | null;
   entries: LocationEntry[] | null;
+  allEntries: LocationEntry[];
+  placeRadius: number;
+  onPlaceRadiusChange: (radius: number) => void;
   onClose: () => void;
   onBack: () => void;
   onSelectEntry: (entry: LocationEntry) => void;
@@ -48,7 +52,17 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function Details({ entry }: { entry: LocationEntry }) {
+function Details({
+  entry,
+  allEntries,
+  placeRadius,
+  onPlaceRadiusChange,
+}: {
+  entry: LocationEntry;
+  allEntries: LocationEntry[];
+  placeRadius: number;
+  onPlaceRadiusChange: (radius: number) => void;
+}) {
   const { location } = entry;
   const zone = location.timeZoneName;
   const region = [location.localityName, location.administrativeArea, location.country]
@@ -58,6 +72,13 @@ function Details({ entry }: { entry: LocationEntry }) {
   return (
     <div className="overflow-y-auto px-4 pb-2">
       <p className="pb-3 text-dim">{region}</p>
+      <WeekTable
+        entry={entry}
+        allEntries={allEntries}
+        radius={placeRadius}
+        onRadiusChange={onPlaceRadiusChange}
+      />
+      <p className="pb-2 font-medium">This stop</p>
       <dl>
         <Fact label="Arrived">{formatDate(entry.arrivalDate, zone)}</Fact>
         <Fact label="Left">{formatDate(entry.departureDate, zone)}</Fact>
@@ -120,6 +141,9 @@ function dateSpan(entries: LocationEntry[]) {
 export default function DetailsPanel({
   entry,
   entries,
+  allEntries,
+  placeRadius,
+  onPlaceRadiusChange,
   onClose,
   onBack,
   onSelectEntry,
@@ -155,7 +179,12 @@ export default function DetailsPanel({
         </IconButton>
       </header>
       {entry ? (
-        <Details entry={entry} />
+        <Details
+          entry={entry}
+          allEntries={allEntries}
+          placeRadius={placeRadius}
+          onPlaceRadiusChange={onPlaceRadiusChange}
+        />
       ) : (
         <StopList entries={entries!} onSelectEntry={onSelectEntry} />
       )}

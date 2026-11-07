@@ -6,6 +6,7 @@ import HeatControls from "./components/HeatControls";
 import SegmentedControl from "./components/SegmentedControl";
 import { loadLocations, type LocationEntry } from "./data";
 import { DEFAULT_HEAT_SETTINGS } from "./heatmap";
+import { DEFAULT_PLACE_RADIUS } from "./week";
 
 const MAP_MODES: { id: MapMode; label: string }[] = [
   { id: "clusters", label: "Clusters" },
@@ -29,6 +30,7 @@ export default function App() {
   const [filterCountry, setFilterCountry] = useState("");
   const [mode, setMode] = useState<MapMode>("clusters");
   const [heatSettings, setHeatSettings] = useState(DEFAULT_HEAT_SETTINGS);
+  const [placeRadius, setPlaceRadius] = useState(DEFAULT_PLACE_RADIUS);
 
   useEffect(() => {
     loadLocations()
@@ -107,6 +109,7 @@ export default function App() {
         heatSettings={heatSettings}
         entries={filtered}
         selected={selected}
+        placeRadius={placeRadius}
         flyTo={flyTo}
         onSelect={handleMapSelect}
         onClusterSelect={handleClusterSelect}
@@ -177,6 +180,9 @@ export default function App() {
       <DetailsPanel
         entry={selected}
         entries={clusterEntries}
+        allEntries={data}
+        placeRadius={placeRadius}
+        onPlaceRadiusChange={setPlaceRadius}
         onClose={handleClose}
         onBack={handleBack}
         onSelectEntry={handleListSelect}

@@ -88,6 +88,7 @@ This app is fully self-contained. All data is loaded from a local `public/places
 - **Dots view** — switch from clusters to one dot for every stop, with no grouping at any zoom level
 - **Heatmap view** — heat by time spent or number of visits, with controls for size, softness, the amount that reaches full colour, and low-end boost
 - **Country filter** — filter stops by country
+- **Weekly hour table** — for any stop opened from the clustered map, a 7-day by 24-hour table of the time spent at that place, with stops within an adjustable radius (40 m by default) counted as one place
 - **Stop details** — date, time, duration, coordinates, accuracy and timezone, with times shown in the stop's own timezone
 - **Dark theme** — built-in dark UI
 

@@ -22,6 +22,7 @@ A client-only React 19 + TypeScript SPA with no backend and no router. The app h
 - **State (`src/App.tsx`):** owns all shared state with plain `useState`: the loaded data, the selected entry, the selected cluster's entries, the country filter and the derived filtered list. There is no state library. Rendering waits for loading to finish, so `MapView` always mounts with data.
 - **Map views:** `App` holds the current `MapMode` and lists the options in `MAP_MODES`, and `MapView` renders the matching layer. To add a view, extend `MapMode` and `MAP_MODES` and add its layer in `MapView`. The Dots layer draws non-interactive canvas circle markers, so it can't open details.
 - **Heatmap (`src/heatmap.ts`, `HeatLayer`, `HeatControls`):** the layer adds each stop's hours or visits into a float grid at screen resolution, then maps each amount through a log scale (`heatFraction`) to a colour, so "Full colour at" means real hours or visits at any zoom and small amounts stay distinct from each other. It redraws fully on every map move and setting change, and its cost grows with stops × size².
+- **Weekly table (`src/week.ts`, `WeekTable`):** records have no place ID, so a "place" is every stop within the adjustable radius of the selected stop, drawn as a circle on the map. Picking a different stop in the same area can give a slightly different group. Stays are split at hour boundaries in each stop's own timezone. The table only appears in stop details, which the Dots and Heatmap views can't open.
 - **Views (`src/components/`):** `MapView` renders the map and its stops, and `DetailsPanel` shows a cluster list or one stop's details. `selected` and `clusterEntries` can both be set: a stop opened from a cluster list keeps the list so Back can return to it.
 
 Each record is one visit (a stop with arrival and departure times), so a place visited repeatedly appears as several records. Records contain no route data or stable place ID.
@@ -50,5 +51,5 @@ The README promises no analytics, telemetry, or external API calls beyond map ti
 
 ## Planning docs
 
-- `docs/features-to-build.md`: the chosen, unbuilt features. The weekly hour table (punchcard) is top priority.
+- `docs/features-to-build.md`: the chosen features and which are built.
 - `docs/visualization-ideas.md`: the full list of ideas, with an analysis of what the data can and cannot support.

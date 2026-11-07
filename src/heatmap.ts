@@ -26,7 +26,7 @@ export const DEFAULT_HEAT_SETTINGS: HeatSettings = {
 const LOG_UNIT: Record<HeatCountBy, number> = { time: 1 / 12, visits: 1 };
 
 // One hue, getting lighter as the amount rises, so it reads as "more" on the dark map.
-const STOPS: [number, number, number][] = [
+export const HEAT_STOPS: [number, number, number][] = [
   [122, 44, 0],
   [217, 72, 15],
   [255, 146, 43],
@@ -34,11 +34,14 @@ const STOPS: [number, number, number][] = [
   [255, 244, 230],
 ];
 
-function rampColor(t: number): [number, number, number] {
-  const position = Math.min(1, Math.max(0, t)) * (STOPS.length - 1);
-  const index = Math.min(STOPS.length - 2, Math.floor(position));
+export function rampColor(
+  t: number,
+  stops = HEAT_STOPS,
+): [number, number, number] {
+  const position = Math.min(1, Math.max(0, t)) * (stops.length - 1);
+  const index = Math.min(stops.length - 2, Math.floor(position));
   const mix = position - index;
-  const [a, b] = [STOPS[index], STOPS[index + 1]];
+  const [a, b] = [stops[index], stops[index + 1]];
   return [
     a[0] + (b[0] - a[0]) * mix,
     a[1] + (b[1] - a[1]) * mix,

@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef } from "react";
 import {
   AttributionControl,
+  Circle,
   MapContainer,
   Marker,
   TileLayer,
@@ -184,6 +185,7 @@ interface MapViewProps extends StopsProps {
   mode: MapMode;
   heatSettings: HeatSettings;
   selected: LocationEntry | null;
+  placeRadius: number;
   flyTo: LocationEntry | null;
   onBackgroundClick: () => void;
 }
@@ -193,6 +195,7 @@ export default function MapView({
   heatSettings,
   entries,
   selected,
+  placeRadius,
   flyTo,
   onSelect,
   onClusterSelect,
@@ -226,13 +229,21 @@ export default function MapView({
         <HeatLayer entries={entries} settings={heatSettings} />
       )}
       {selected && (
-        <Marker
-          position={latLng(selected)}
-          icon={selectedIcon}
-          interactive={false}
-          keyboard={false}
-          zIndexOffset={10000}
-        />
+        <>
+          <Circle
+            center={latLng(selected)}
+            radius={placeRadius}
+            interactive={false}
+            pathOptions={{ color: "#5b9dff", weight: 1, fillOpacity: 0.1 }}
+          />
+          <Marker
+            position={latLng(selected)}
+            icon={selectedIcon}
+            interactive={false}
+            keyboard={false}
+            zIndexOffset={10000}
+          />
+        </>
       )}
     </MapContainer>
   );
