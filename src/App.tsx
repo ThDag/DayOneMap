@@ -2,11 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import MapView, { type MapMode } from "./components/MapView";
 import DetailsPanel from "./components/DetailsPanel";
+import HeatControls from "./components/HeatControls";
+import SegmentedControl from "./components/SegmentedControl";
 import { loadLocations, type LocationEntry } from "./data";
+import { DEFAULT_HEAT_SETTINGS } from "./heatmap";
 
 const MAP_MODES: { id: MapMode; label: string }[] = [
   { id: "clusters", label: "Clusters" },
   { id: "dots", label: "Dots" },
+  { id: "heatmap", label: "Heatmap" },
 ];
 
 function byArrival(a: LocationEntry, b: LocationEntry) {
@@ -24,6 +28,7 @@ export default function App() {
   const [flyTo, setFlyTo] = useState<LocationEntry | null>(null);
   const [filterCountry, setFilterCountry] = useState("");
   const [mode, setMode] = useState<MapMode>("clusters");
+  const [heatSettings, setHeatSettings] = useState(DEFAULT_HEAT_SETTINGS);
 
   useEffect(() => {
     loadLocations()
@@ -99,6 +104,7 @@ export default function App() {
     <main className="relative isolate h-dvh">
       <MapView
         mode={mode}
+        heatSettings={heatSettings}
         entries={filtered}
         selected={selected}
         flyTo={flyTo}
@@ -107,7 +113,7 @@ export default function App() {
         onBackgroundClick={handleClose}
       />
 
-      <div className="absolute top-3 left-3 z-[1000] w-64 max-w-[calc(100%-1.5rem)] overflow-hidden rounded-lg border border-line bg-surface shadow-lg shadow-black/40">
+      <div className="absolute top-3 left-3 z-[1000] max-h-[calc(100%-1.5rem)] w-64 max-w-[calc(100%-1.5rem)] overflow-y-auto rounded-lg border border-line bg-surface shadow-lg shadow-black/40">
         <div className="flex items-baseline justify-between gap-3 px-3 py-2.5">
           <h1 className="font-semibold">DayOneMap</h1>
           <p className="text-dim">
@@ -117,29 +123,16 @@ export default function App() {
             {data.length === 1 ? "stop" : "stops"}
           </p>
         </div>
-        <div
-          role="group"
-          aria-label="Map view"
-          className="grid grid-cols-2 gap-1 border-t border-line p-1"
-        >
-          {MAP_MODES.map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              aria-pressed={mode === id}
-              onClick={() => {
-                setMode(id);
-                handleClose();
-              }}
-              className={`h-8 rounded-md transition-colors ${
-                mode === id
-                  ? "bg-raised font-medium text-ink"
-                  : "text-dim hover:bg-raised hover:text-ink"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="border-t border-line p-1">
+          <SegmentedControl
+            label="Map view"
+            options={MAP_MODES}
+            value={mode}
+            onChange={(next) => {
+              setMode(next);
+              handleClose();
+            }}
+          />
         </div>
         {data.length > 0 ? (
           <div className="relative border-t border-line">
@@ -175,6 +168,9 @@ export default function App() {
             Sample data. Add your export as{" "}
             <code className="font-[inherit] text-ink">public/places.json</code>.
           </p>
+        )}
+        {mode === "heatmap" && (
+          <HeatControls settings={heatSettings} onChange={setHeatSettings} />
         )}
       </div>
 

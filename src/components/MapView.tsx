@@ -10,6 +10,8 @@ import {
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import type { LocationEntry } from "../data";
+import type { HeatSettings } from "../heatmap";
+import HeatLayer from "./HeatLayer";
 
 const FOCUS_ZOOM = 13;
 
@@ -176,10 +178,11 @@ const Dots = memo(function Dots({ entries }: { entries: LocationEntry[] }) {
   return null;
 });
 
-export type MapMode = "clusters" | "dots";
+export type MapMode = "clusters" | "dots" | "heatmap";
 
 interface MapViewProps extends StopsProps {
   mode: MapMode;
+  heatSettings: HeatSettings;
   selected: LocationEntry | null;
   flyTo: LocationEntry | null;
   onBackgroundClick: () => void;
@@ -187,6 +190,7 @@ interface MapViewProps extends StopsProps {
 
 export default function MapView({
   mode,
+  heatSettings,
   entries,
   selected,
   flyTo,
@@ -210,14 +214,16 @@ export default function MapView({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {mode === "clusters" ? (
+      {mode === "clusters" && (
         <Stops
           entries={entries}
           onSelect={onSelect}
           onClusterSelect={onClusterSelect}
         />
-      ) : (
-        <Dots entries={entries} />
+      )}
+      {mode === "dots" && <Dots entries={entries} />}
+      {mode === "heatmap" && (
+        <HeatLayer entries={entries} settings={heatSettings} />
       )}
       {selected && (
         <Marker

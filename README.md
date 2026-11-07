@@ -86,6 +86,7 @@ This app is fully self-contained. All data is loaded from a local `public/places
 
 - **Clustered map** — stops cluster at low zoom levels; click a cluster to list its stops
 - **Dots view** — switch from clusters to one dot for every stop, with no grouping at any zoom level
+- **Heatmap view** — heat by time spent or number of visits, with controls for size, softness, the amount that reaches full colour, and low-end boost
 - **Country filter** — filter stops by country
 - **Stop details** — date, time, duration, coordinates, accuracy and timezone, with times shown in the stop's own timezone
 - **Dark theme** — built-in dark UI
