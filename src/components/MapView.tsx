@@ -9,6 +9,7 @@ import {
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import type { LocationEntry } from "../data";
+import { formatDate } from "../format";
 
 const icon = L.divIcon({
   className: "custom-marker",
@@ -17,13 +18,6 @@ const icon = L.divIcon({
   iconAnchor: [12, 24],
   popupAnchor: [0, -24],
 });
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
 
 function FlyTo({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
@@ -124,8 +118,8 @@ export default memo(function MapView({
                 <p className="text-sm text-gray-400">{entry.location.country}</p>
                 <hr className="my-2 border-gray-700" />
                 <p className="text-xs text-gray-500">
-                  {formatDate(entry.arrivalDate)} &ndash;{" "}
-                  {formatDate(entry.departureDate)}
+                  {formatDate(entry.arrivalDate, entry.location.timeZoneName)} &ndash;{" "}
+                  {formatDate(entry.departureDate, entry.location.timeZoneName)}
                 </p>
               </div>
             </Popup>

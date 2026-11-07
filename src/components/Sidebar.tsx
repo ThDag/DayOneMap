@@ -1,27 +1,6 @@
 import { X, MapPin, Calendar, Clock, Crosshair, Globe, ChevronRight } from "lucide-react";
 import type { LocationEntry } from "../data";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
-function formatDateShort(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+import { formatDate, formatDateShort, formatTime } from "../format";
 
 function durationMs(a: string, b: string) {
   return new Date(b).getTime() - new Date(a).getTime();
@@ -54,6 +33,7 @@ function ClusterList({
     <div className="flex-1 overflow-y-auto">
       {entries.map((entry) => {
         const dur = durationMs(entry.arrivalDate, entry.departureDate);
+        const zone = entry.location.timeZoneName;
         return (
           <button
             key={entry.uuid}
@@ -65,9 +45,9 @@ function ClusterList({
                 {entry.location.placeName}
               </p>
               <p className="mt-0.5 text-xs text-gray-400">
-                {formatDateShort(entry.arrivalDate)}{" "}
+                {formatDateShort(entry.arrivalDate, zone)}{" "}
                 <span className="text-gray-600">|</span>{" "}
-                {formatTime(entry.arrivalDate)}&ndash;{formatTime(entry.departureDate)}{" "}
+                {formatTime(entry.arrivalDate, zone)}&ndash;{formatTime(entry.departureDate, zone)}{" "}
                 <span className="text-gray-600">|</span>{" "}
                 <span className="text-emerald-400">{formatDuration(dur)}</span>
               </p>
@@ -144,7 +124,7 @@ export default function Sidebar({
                 Arrival
               </p>
               <p className="text-sm text-gray-200">
-                {formatDate(entry.arrivalDate)}
+                {formatDate(entry.arrivalDate, entry.location.timeZoneName)}
               </p>
             </div>
           </div>
@@ -155,7 +135,7 @@ export default function Sidebar({
                 Departure
               </p>
               <p className="text-sm text-gray-200">
-                {formatDate(entry.departureDate)}
+                {formatDate(entry.departureDate, entry.location.timeZoneName)}
               </p>
             </div>
           </div>
