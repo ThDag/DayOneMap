@@ -78,10 +78,6 @@ npm run preview
 
 If no `places.json` is found, the app falls back to 40 built-in sample stops in cities including New York, London, Tokyo, Sydney, Istanbul and across the Balkans. A **Sample data** note appears in the top-left panel so you know real data isn't loaded.
 
-## Privacy
-
-This app is fully self-contained. All data is loaded from a local `public/places.json` file and never leaves your machine. There are no analytics, no telemetry, and no external API calls except for map tiles. Tiles load from OpenStreetMap by default, and from Esri only while you have the Clean or Satellite base map selected. Your location file is never sent, but as with any online map, the provider can see which map areas you view.
-
 ## Features
 
 - **Clustered map** — stops cluster at low zoom levels; click a cluster to see a summary of it and list its stops
@@ -110,6 +106,5 @@ MIT
 
 This project is fully vibecoded.
 
-Taha Dağıstanlı <br>
+Taha Dağıstanlı 
 
-OpenCode (DeepSeek V4 Flash)

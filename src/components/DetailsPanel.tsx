@@ -113,14 +113,19 @@ function StopList({
               onClick={() => onSelectEntry(entry)}
               className="block w-full px-4 py-2.5 text-left transition-colors hover:bg-raised"
             >
-              <span className="block truncate font-medium">
-                {entry.location.placeName}
+              <span className="block font-medium">
+                {formatDateShort(entry.arrivalDate, zone)}
+                <span aria-hidden="true" className="mx-1.5">
+                  •
+                </span>
+                {formatDuration(entry.arrivalDate, entry.departureDate)}
               </span>
               <span className="block text-dim">
-                {formatDateShort(entry.arrivalDate, zone)},{" "}
                 {formatTime(entry.arrivalDate, zone)}–
-                {formatTime(entry.departureDate, zone)},{" "}
-                {formatDuration(entry.arrivalDate, entry.departureDate)}
+                {formatTime(entry.departureDate, zone)}
+              </span>
+              <span className="block truncate text-dim">
+                {entry.location.placeName}
               </span>
             </button>
           </li>
