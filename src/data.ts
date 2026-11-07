@@ -1,3 +1,5 @@
+import { generateIstanbulStops } from "./mockIstanbul";
+
 export interface LocationEntry {
   uuid: string;
   location: {
@@ -25,7 +27,7 @@ export interface LoadResult {
   usingMock: boolean;
 }
 
-const mockData: LocationEntry[] = [
+const handWrittenStops: LocationEntry[] = [
   {
     uuid: "mock-1",
     location: {
@@ -868,6 +870,10 @@ const mockData: LocationEntry[] = [
   },
 ];
 
+function mockData() {
+  return [...handWrittenStops, ...generateIstanbulStops()];
+}
+
 export async function loadLocations(): Promise<LoadResult> {
   try {
     const res = await fetch("/places.json");
@@ -876,7 +882,7 @@ export async function loadLocations(): Promise<LoadResult> {
         console.info(
           "No places.json found — using mock data. Add your own at public/places.json",
         );
-        return { data: mockData, usingMock: true };
+        return { data: mockData(), usingMock: true };
       }
       throw new Error(`Failed to load places.json (${res.status})`);
     }
@@ -885,6 +891,6 @@ export async function loadLocations(): Promise<LoadResult> {
     console.info(
       "Could not load places.json — using mock data. Add your own at public/places.json",
     );
-    return { data: mockData, usingMock: true };
+    return { data: mockData(), usingMock: true };
   }
 }

@@ -18,7 +18,7 @@ There is no test runner or test suite. Verify changes with the type-check, lint,
 
 A client-only React 19 + TypeScript SPA with no backend and no router. The app has three layers:
 
-- **Data (`src/data.ts`):** defines `LocationEntry`, which mirrors the Day One export schema, and holds the mock dataset, which makes up most of the file. `loadLocations()` fetches `/places.json` once at startup.
+- **Data (`src/data.ts`):** defines `LocationEntry`, which mirrors the Day One export schema, and holds 40 hand-written mock stops, which make up most of the file. `src/mockIstanbul.ts` adds about 3,000 stops from a seeded generator, invented so that none of it comes from a real export. `loadLocations()` fetches `/places.json` once at startup.
 - **State (`src/App.tsx`):** owns all shared state with plain `useState`: the loaded data, the selected entry, the selected cluster's entries, the country filter and the derived filtered list. There is no state library. Rendering waits for loading to finish, so `MapView` always mounts with data.
 - **Map views:** `App` holds the current `MapMode` and lists the options in `MAP_MODES`, and `MapView` renders the matching layer. To add a view, extend `MapMode` and `MAP_MODES` and add its layer in `MapView`. The Dots layer draws non-interactive canvas circle markers, so it can't open details.
 - **Heatmap (`src/heatmap.ts`, `HeatLayer`, `HeatControls`):** the layer adds each stop's hours or visits into a float grid at screen resolution, then maps each amount through a log scale (`heatFraction`) to a colour, so "Full colour at" means real hours or visits at any zoom and small amounts stay distinct from each other. It redraws fully on every map move and setting change, and its cost grows with stops × size².

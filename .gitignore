@@ -24,4 +24,6 @@ dist-ssr
 *.sw?
 
 # User data - places.json contains personal location history
-public/places.json
+public/places*.json
+public/places.json.off
+public/placess.json

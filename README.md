@@ -76,7 +76,7 @@ npm run preview
 
 ## Mock Data
 
-If no `places.json` is found, the app falls back to 40 built-in sample stops in cities including New York, London, Tokyo, Sydney, Istanbul and across the Balkans. A **Sample data** note appears in the top-left panel so you know real data isn't loaded.
+If no `places.json` is found, the app falls back to built-in sample data: about 3,000 generated stops covering two years of an invented life in Istanbul, plus 40 stops in cities including New York, London, Tokyo, Sydney and across the Balkans. A **Sample data** note appears in the top-left panel so you know real data isn't loaded.
 
 ## Features
 
