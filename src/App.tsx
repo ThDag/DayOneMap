@@ -4,6 +4,7 @@ import { BASEMAPS, type BasemapId } from "./basemaps";
 import MapView, { type MapMode } from "./components/MapView";
 import DetailsPanel from "./components/DetailsPanel";
 import HeatControls from "./components/HeatControls";
+import ImportButton from "./components/ImportButton";
 import SegmentedControl from "./components/SegmentedControl";
 import WelcomeDialog from "./components/WelcomeDialog";
 import { loadLocations, type LocationEntry } from "./data";
@@ -62,6 +63,16 @@ export default function App() {
     setClusterEntries(null);
     setFlyTo(null);
   }, []);
+
+  const handleImport = useCallback(
+    (entries: LocationEntry[]) => {
+      setData(entries);
+      setUsingMock(false);
+      setFilterCountry("");
+      handleClose();
+    },
+    [handleClose],
+  );
 
   const handleBack = useCallback(() => {
     setSelected(null);
@@ -179,10 +190,15 @@ export default function App() {
           </p>
         )}
         {usingMock && (
-          <p className="border-t border-line px-3 py-2.5 text-dim">
-            Sample data. Add your export as{" "}
-            <code className="font-[inherit] text-ink">public/places.json</code>.
-          </p>
+          <div className="border-t border-line px-3 py-2.5 text-dim">
+            Sample data.{" "}
+            <ImportButton
+              onImport={handleImport}
+              className="font-medium text-ink underline decoration-dim underline-offset-2 transition-colors hover:decoration-ink disabled:opacity-60"
+            >
+              Import your file
+            </ImportButton>
+          </div>
         )}
         {mode === "heatmap" && (
           <HeatControls settings={heatSettings} onChange={setHeatSettings} />
@@ -200,7 +216,7 @@ export default function App() {
         onSelectEntry={handleListSelect}
       />
 
-      <WelcomeDialog />
+      <WelcomeDialog onImport={handleImport} />
     </main>
   );
 }

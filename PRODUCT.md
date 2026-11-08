@@ -20,7 +20,7 @@ It shows the user's own visit history, read from a local file, with no account a
 
 ## Operating Context
 
-The user exports JSON from Day One (Places → View All → Locations → Export Data) and saves it as `public/places.json`, then runs the app locally. See `docs/how-to-export-dayone-data.md`.
+The user exports JSON from Day One (Places → View All → Locations → Export Data) and either imports the file in the page, where it is held in memory until reload, or saves it as `public/places.json` and runs the app locally. See `docs/how-to-export-dayone-data.md`.
 
 ## Capabilities and Constraints
 

@@ -874,6 +874,40 @@ function mockData() {
   return [...handWrittenStops, ...generateIstanbulStops()];
 }
 
+function isDate(value: unknown) {
+  return typeof value === "string" && !Number.isNaN(Date.parse(value));
+}
+
+// Checks only the fields the app can't render without; Day One leaves some names blank.
+function isLocationEntry(value: unknown): value is LocationEntry {
+  const entry = value as Partial<LocationEntry> | null;
+  return (
+    typeof entry?.uuid === "string" &&
+    typeof entry.location?.latitude === "number" &&
+    typeof entry.location.longitude === "number" &&
+    typeof entry.horizontalAccuracy === "number" &&
+    isDate(entry.arrivalDate) &&
+    isDate(entry.departureDate)
+  );
+}
+
+/** Parses an imported export, throwing a message written for the person who chose the file. */
+export function parseLocations(text: string): LocationEntry[] {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new Error("That file isn't valid JSON. Choose the file you exported from Day One.");
+  }
+  if (!Array.isArray(parsed) || !parsed.every(isLocationEntry)) {
+    throw new Error("That doesn't look like a Day One location export. Check the export guide.");
+  }
+  if (parsed.length === 0) {
+    throw new Error("That file has no stops in it.");
+  }
+  return parsed;
+}
+
 export async function loadLocations(): Promise<LoadResult> {
   try {
     const res = await fetch("/places.json");

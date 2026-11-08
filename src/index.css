@@ -8,6 +8,7 @@
   --color-dim: #9ca3ad;
   --color-ink: #eceef1;
   --color-accent: #5b9dff;
+  --color-error: #ff8f85;
 }
 
 @layer base {

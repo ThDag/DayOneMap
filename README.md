@@ -26,6 +26,8 @@ npm install
 
 Export your location history from the Day One app (Places → View All → Locations ( i ) → Export Data) and save the JSON file as `public/places.json`. See [`docs/how-to-export-dayone-data.md`](docs/how-to-export-dayone-data.md) for a step-by-step guide with screenshots.
 
+You can also import the exported file from the page itself. The browser reads it without uploading or saving it, so reloading the page clears it.
+
 The file should match this schema (see [`public/places.json.example`](public/places.json.example)):
 
 ```json
