@@ -895,17 +895,29 @@ function isLocationEntry(value: unknown): value is LocationEntry {
 export function parseLocations(text: string): LocationEntry[] {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(text);
+    // A comma left before the closing bracket is easy to introduce when trimming an export.
+    parsed = JSON.parse(text.replace(/,\s*\]\s*$/, "]"));
   } catch {
     throw new Error("That file isn't valid JSON. Choose the file you exported from Day One.");
   }
-  if (!Array.isArray(parsed) || !parsed.every(isLocationEntry)) {
+  if (!Array.isArray(parsed)) {
     throw new Error("That doesn't look like a Day One location export. Check the export guide.");
   }
-  if (parsed.length === 0) {
+  // A visit still in progress at export time has no departure, so it has no duration to show,
+  // and a stop recorded without coordinates has no place on the map.
+  const usable = parsed.filter(
+    (entry) =>
+      entry?.departureDate !== undefined &&
+      entry.location?.latitude !== undefined &&
+      entry.location?.longitude !== undefined,
+  );
+  if (!usable.every(isLocationEntry)) {
+    throw new Error("That doesn't look like a Day One location export. Check the export guide.");
+  }
+  if (usable.length === 0) {
     throw new Error("That file has no stops in it.");
   }
-  return parsed;
+  return usable;
 }
 
 export async function loadLocations(): Promise<LoadResult> {
