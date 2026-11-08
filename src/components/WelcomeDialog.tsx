@@ -7,11 +7,11 @@ import {
   X,
 } from "lucide-react";
 import type { LocationEntry } from "../data";
+import { REPO_URL } from "../links";
 import { Fact, IconButton } from "./DetailsPanel";
 import ImportButton from "./ImportButton";
 
 const SEEN_KEY = "dayonemap:welcome-seen";
-const REPO_URL = "https://github.com/ThDag/DayOneMap";
 const EXPORT_GUIDE_URL = `${REPO_URL}/blob/main/docs/how-to-export-dayone-data.md`;
 const LINK_CLASS =
   "font-medium text-ink underline decoration-dim underline-offset-2 transition-colors hover:decoration-ink";
