@@ -21,7 +21,7 @@ interface DetailsPanelProps {
   onSelectEntry: (entry: LocationEntry) => void;
 }
 
-function IconButton({
+export function IconButton({
   label,
   onClick,
   children,
@@ -43,7 +43,7 @@ function IconButton({
   );
 }
 
-function Fact({ label, children }: { label: string; children: ReactNode }) {
+export function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex gap-3 border-t border-line py-2.5">
       <dt className="w-24 shrink-0 text-dim">{label}</dt>

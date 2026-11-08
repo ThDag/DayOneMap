@@ -5,6 +5,7 @@ import MapView, { type MapMode } from "./components/MapView";
 import DetailsPanel from "./components/DetailsPanel";
 import HeatControls from "./components/HeatControls";
 import SegmentedControl from "./components/SegmentedControl";
+import WelcomeDialog from "./components/WelcomeDialog";
 import { loadLocations, type LocationEntry } from "./data";
 import { DEFAULT_HEAT_SETTINGS } from "./heatmap";
 import { DEFAULT_PLACE_RADIUS } from "./week";
@@ -198,6 +199,8 @@ export default function App() {
         onBack={handleBack}
         onSelectEntry={handleListSelect}
       />
+
+      <WelcomeDialog />
     </main>
   );
 }
